@@ -1,7 +1,6 @@
 package webmvc.org.springframework.web.servlet.resolver;
 
 import java.util.List;
-import java.util.Optional;
 
 public class ViewResolvers {
 
@@ -11,9 +10,10 @@ public class ViewResolvers {
         this.values = values;
     }
 
-    public Optional<ViewResolver> findSupportedViewResolver(final String viewName) {
+    public ViewResolver findSupportedViewResolver(final String viewName) {
         return values.stream()
                 .filter(it -> it.supports(viewName))
-                .findAny();
+                .findAny()
+                .orElseThrow(() -> new IllegalArgumentException("View Not Supported"));
     }
 }

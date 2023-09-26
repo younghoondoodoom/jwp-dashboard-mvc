@@ -8,7 +8,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import webmvc.org.springframework.web.servlet.handler.adaptor.HandlerAdaptors;
 import webmvc.org.springframework.web.servlet.handler.mapping.HandlerMappings;
-import webmvc.org.springframework.web.servlet.mvc.HandlerAdaptor;
 import webmvc.org.springframework.web.servlet.mvc.tobe.AnnotationHandlerAdaptor;
 import webmvc.org.springframework.web.servlet.mvc.tobe.AnnotationHandlerMapping;
 import webmvc.org.springframework.web.servlet.resolver.JsonViewResolver;
@@ -55,7 +54,7 @@ public class DispatcherServlet extends HttpServlet {
             }
             final var handler = optionalHandler.get();
 
-            final var handlerAdaptor = findHandlerAdaptor(handler);
+            final var handlerAdaptor = handlerAdaptors.findHandlerAdaptor(handler);
             final var modelAndView = handlerAdaptor.execute(request, response, handler);
 
             move(modelAndView, request, response);
@@ -65,18 +64,9 @@ public class DispatcherServlet extends HttpServlet {
         }
     }
 
-    private HandlerAdaptor findHandlerAdaptor(final Object handler) {
-        final var optionalHandlerAdaptor = handlerAdaptors.findHandlerAdaptor(handler);
-        if (optionalHandlerAdaptor.isPresent()) {
-            return optionalHandlerAdaptor.get();
-        }
-        throw new IllegalArgumentException("Handler Adaptor Not Found");
-    }
-
     private void move(final ModelAndView modelAndView, final HttpServletRequest request, final HttpServletResponse response) throws Exception {
         final var viewName = modelAndView.getViewName();
-        final ViewResolver viewResolver = viewResolvers.findSupportedViewResolver(viewName)
-                .orElseThrow(() -> new IllegalArgumentException("View Not Supported"));
+        final ViewResolver viewResolver = viewResolvers.findSupportedViewResolver(viewName);
         final View view = viewResolver.resolveViewName(viewName);
         view.render(modelAndView.getModel(), request, response);
     }

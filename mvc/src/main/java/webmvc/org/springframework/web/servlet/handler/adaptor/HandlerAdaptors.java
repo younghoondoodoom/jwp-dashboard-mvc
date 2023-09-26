@@ -2,7 +2,6 @@ package webmvc.org.springframework.web.servlet.handler.adaptor;
 
 import webmvc.org.springframework.web.servlet.mvc.HandlerAdaptor;
 import java.util.List;
-import java.util.Optional;
 
 public class HandlerAdaptors {
 
@@ -12,9 +11,10 @@ public class HandlerAdaptors {
         this.values = values;
     }
 
-    public Optional<HandlerAdaptor> findHandlerAdaptor(final Object handler) {
+    public HandlerAdaptor findHandlerAdaptor(final Object handler) {
         return values.stream()
                 .filter(value -> value.supports(handler))
-                .findAny();
+                .findAny()
+                .orElseThrow(() -> new IllegalArgumentException("Handler Adaptor Not Found"));
     }
 }
